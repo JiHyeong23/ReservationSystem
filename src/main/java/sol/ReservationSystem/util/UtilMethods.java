@@ -16,7 +16,7 @@ public class UtilMethods {
     private JwtHelper jwtHelper;
     private UserRepository userRepository;
 
-    public User parseTokenFotUser(HttpServletRequest request) {
+    public User parseTokenForUser(HttpServletRequest request) {
         try {
             String token = request.getHeader("Authorization").substring(7);
             String email = jwtHelper.getEmailFromJwtToken(token);

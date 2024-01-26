@@ -49,7 +49,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void updateUserInfo(UserModifyDto userModifyDto, HttpServletRequest request) {
-        User user = utilMethods.parseTokenFotUser(request);
+        User user = utilMethods.parseTokenForUser(request);
         if (user.getDescription() == null) {
             user.setDescription("");
         }
@@ -59,7 +59,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void updateProfileImage(MultipartFile profileImage, HttpServletRequest request) {
-        User user = utilMethods.parseTokenFotUser(request);
+        User user = utilMethods.parseTokenForUser(request);
         String beforeImage = user.getProfileImage();
         String imagePath = fileUploader.saveImage(profileImage, beforeImage);
         user.setProfileImage(imagePath);
@@ -67,7 +67,7 @@ public class UserService implements UserDetailsService {
     }
 
     public void updatePassword(UserPassUpdateDto userPassUpdateDto, HttpServletRequest request) {
-        User user = utilMethods.parseTokenFotUser(request);
+        User user = utilMethods.parseTokenForUser(request);
         if (encoder.matches(userPassUpdateDto.getPassword(), user.getPassword())) {
             user.setNewPassword(encoder.encode(userPassUpdateDto.getNewPassword()));
             userRepository.save(user);
