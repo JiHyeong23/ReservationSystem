@@ -4,7 +4,6 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import sol.ReservationSystem.user.User;
@@ -16,14 +15,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 @AllArgsConstructor
-@Slf4j
 @Component
 public class JwtHelper {
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 20;
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;
     private Environment env;
     private UserRepository userRepository;
-
 
     public String getEmailFromJwtToken(String token) {
         SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(env.getProperty("jwt.key.secret")));
@@ -46,29 +43,26 @@ public class JwtHelper {
         return false;
     }
 
-    public String createAccessToken(String username) {
+    public ResponseToken createToken(String username) {
         User user = userRepository.findByEmail(username);
         Map<String, String> map = new HashMap<>();
         map.put("type", "access");
         map.put("name", user.getEmail());
         SecretKey accessKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(env.getProperty("jwt.key.secret")));
 
-        return Jwts.builder()
-                .setClaims(map)
-                .setSubject(user.getEmail())
+        String accessToken = Jwts.builder()
+                .setClaims(map).setSubject(user.getEmail())
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRE_TIME))
-                .signWith(accessKey, SignatureAlgorithm.HS512)
-                .compact();
-    }
+                .signWith(accessKey, SignatureAlgorithm.HS512).compact();
 
-    public String createRefreshToken(String username) {
-        User user = userRepository.findByEmail(username);
-        SecretKey accessKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(env.getProperty("jwt.key.secret")));
-
-        return Jwts.builder()
+        String refreshToken = Jwts.builder()
                 .setSubject(user.getEmail())
                 .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRE_TIME))
-                .signWith(accessKey, SignatureAlgorithm.HS512)
-                .compact();
+                .signWith(accessKey, SignatureAlgorithm.HS512).compact();
+
+        //Token token = new Token(username, accessToken, refreshToken);
+        //tokenRepository.save(token);
+
+        return ResponseToken.builder().accessToken(accessToken).refreshToken(refreshToken).build();
     }
 }

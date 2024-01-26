@@ -18,15 +18,11 @@ public class SecurityController {
     @PostMapping
     public ResponseEntity reAccess(HttpServletRequest request) {
         String refreshToken = getToken(request);
-        ResponseToken responseToken = new ResponseToken();
+        ResponseToken responseToken = null;
 
         if(jwtHelper.validateJwtToken(refreshToken)) {
             String username = jwtHelper.getEmailFromJwtToken(refreshToken);
-            String newAccessToken = jwtHelper.createAccessToken(username);
-            String newRefreshToken = jwtHelper.createRefreshToken(username);
-
-            responseToken.setAccessToken(newAccessToken);
-            responseToken.setRefreshToken(newRefreshToken);
+             responseToken = jwtHelper.createToken(username);
         }
         return ResponseEntity.ok(responseToken);
     }

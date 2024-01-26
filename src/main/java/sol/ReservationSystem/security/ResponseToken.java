@@ -1,10 +1,10 @@
 package sol.ReservationSystem.security;
 
+import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
+@Builder
 @Getter
-@Setter
 class ResponseToken {
     private String accessToken;
     private String refreshToken;
