@@ -15,18 +15,20 @@ import java.util.concurrent.ThreadLocalRandom;
 @AllArgsConstructor
 public class EmailService {
     private JavaMailSender javaMailSender;
-    public void sendMail(EmailDto emailDto) {
+    public String sendMail(EmailDto emailDto) {
         LocalDateTime time = LocalDateTime.now();
         MimeMessage message = javaMailSender.createMimeMessage();
+        String athentNum = makeInt();
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, false, "UTF-8");
             helper.setTo(emailDto.getEmail());
             helper.setSubject("[예약구매] 인증번호");
-            helper.setText(makeInt() + " 를 입력해주세요.\n" + "인증번호 만료 시각 : " + time.plusMinutes(5).format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm:ss")));
+            helper.setText(athentNum + " 를 입력해주세요.\n" + "인증번호 만료 시각 : " + time.plusMinutes(5).format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일 HH:mm:ss")));
             javaMailSender.send(message);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return athentNum;
     }
 
     public String makeInt() {
