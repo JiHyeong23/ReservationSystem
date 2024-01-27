@@ -22,7 +22,7 @@ public class SecurityController {
 
         if(jwtHelper.validateJwtToken(refreshToken)) {
             String username = jwtHelper.getEmailFromJwtToken(refreshToken);
-             responseToken = jwtHelper.createToken(username);
+            responseToken = jwtHelper.createToken(username);
         }
         return ResponseEntity.ok(responseToken);
     }

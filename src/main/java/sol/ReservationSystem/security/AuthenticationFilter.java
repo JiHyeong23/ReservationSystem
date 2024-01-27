@@ -20,9 +20,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
-    private UserService userService;
-    private JwtHelper jwtHelper;
-    private UserRepository userRepository;
+    private final UserService userService;
+    private final JwtHelper jwtHelper;
+    private final UserRepository userRepository;
 
     public AuthenticationFilter(AuthenticationManager authenticationManager, UserService userService, JwtHelper jwtHelper, UserRepository userRepository) {
         super(authenticationManager);
