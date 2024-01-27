@@ -1,13 +1,11 @@
 package sol.ReservationSystem.user;
 
 import lombok.AllArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.FileUpload;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
@@ -41,14 +39,16 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public void saveUser(UserSignUpDto userSignUpDto) {
+    public User saveUser(UserSignUpDto userSignUpDto) {
         userSignUpDto.setPassword(encoder.encode(userSignUpDto.getPassword()));
         User user = userMapper.UserSignUpDtoToUser(userSignUpDto);
         user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);
+
+        return user;
     }
 
-    public void updateUserInfo(UserModifyDto userModifyDto, HttpServletRequest request) {
+    public User updateUserInfo(UserModifyDto userModifyDto, HttpServletRequest request) {
         User user = utilMethods.parseTokenForUser(request);
         if (user.getDescription() == null) {
             user.setDescription("");
@@ -56,22 +56,29 @@ public class UserService implements UserDetailsService {
         user.updateUser(userModifyDto.getName(), userModifyDto.getDescription());
         user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
+
+        return user;
     }
 
-    public void updateProfileImage(MultipartFile profileImage, HttpServletRequest request) {
+    public User updateProfileImage(MultipartFile profileImage, HttpServletRequest request) {
         User user = utilMethods.parseTokenForUser(request);
         String beforeImage = user.getProfileImage();
         String imagePath = fileUploader.saveImage(profileImage, beforeImage);
         user.setProfileImage(imagePath);
+        user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
+
+        return user;
     }
 
-    public void updatePassword(UserPassUpdateDto userPassUpdateDto, HttpServletRequest request) {
+    public User updatePassword(UserPassUpdateDto userPassUpdateDto, HttpServletRequest request) {
         User user = utilMethods.parseTokenForUser(request);
         if (encoder.matches(userPassUpdateDto.getPassword(), user.getPassword())) {
             user.setNewPassword(encoder.encode(userPassUpdateDto.getNewPassword()));
             userRepository.save(user);
         } //예외처리
+
+        return user;
     }
 
     public User findByEmail(String username) {

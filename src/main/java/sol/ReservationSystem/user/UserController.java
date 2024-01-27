@@ -4,11 +4,8 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 import sol.ReservationSystem.user.dto.UserModifyDto;
 import sol.ReservationSystem.user.dto.UserPassUpdateDto;
 import sol.ReservationSystem.user.dto.UserSignUpDto;
@@ -16,7 +13,6 @@ import sol.ReservationSystem.util.ResponseDto;
 import sol.ReservationSystem.util.UtilMethods;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/users")
@@ -28,35 +24,39 @@ public class UserController {
     //회원가입
     @PostMapping("/signUp")
     public ResponseEntity registerUser(@RequestBody UserSignUpDto userSignUpDto){
-        userService.saveUser(userSignUpDto);
+        User user = userService.saveUser(userSignUpDto);
 
-        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully saved");
+        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully saved", user.getName());
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     //이름, 설명 업데이트
     @PostMapping("/update")
     public ResponseEntity modifyUseInfo(@RequestBody UserModifyDto userModifyDto, HttpServletRequest request) {
-        userService.updateUserInfo(userModifyDto, request);
-        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully updated");
+        User user = userService.updateUserInfo(userModifyDto, request);
+
+        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully updated", user.getUpdatedAt());
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     //이미지 업데이트
     @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity imageUpdate(@RequestPart MultipartFile profileImage, HttpServletRequest request) {
-        userService.updateProfileImage(profileImage, request);
+        User user = userService.updateProfileImage(profileImage, request);
 
-        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully updated");
+        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully updated", user.getUpdatedAt());
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     //비밀번호 업데이트
     @PostMapping("/password")
     public ResponseEntity pwUpdate(@RequestBody UserPassUpdateDto userPassUpdateDto, HttpServletRequest request) {
-        userService.updatePassword(userPassUpdateDto, request);
+        User user = userService.updatePassword(userPassUpdateDto, request);
 
-        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully updated");
+        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully updated", user.getName());
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
+
+//    @GetMapping("/new")
+//    public ResponseEntity getNews
 }

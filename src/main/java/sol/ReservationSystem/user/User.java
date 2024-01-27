@@ -1,15 +1,20 @@
 package sol.ReservationSystem.user;
 
 import lombok.*;
+import sol.ReservationSystem.post.Post;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
 @Table(name = "users")
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,24 +27,14 @@ public class User {
     @Setter
     private String profileImage;
     @Setter
-    private LocalDateTime createdAt;
+    @Builder.Default
+    private LocalDateTime createdAt = LocalDateTime.now();
     @Setter
     private LocalDateTime updatedAt;
     @Setter
     private LocalDateTime lastLogin;
-
-    @Builder
-    public User(Long id, String name, String email, String password, String profileImage, String description, LocalDateTime createdAt, LocalDateTime updatedAt, LocalDateTime lastLogin) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.profileImage = profileImage;
-        this.description = description;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.lastLogin = lastLogin;
-    }
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Post> posts = new ArrayList<>();
 
     public void updateUser(String name, String description) {
         this.name = Objects.requireNonNullElse(name, this.name);
