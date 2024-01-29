@@ -1,4 +1,4 @@
-package sol.ReservationSystem.user.dto;
+package sol.ReservationSystem.userActivity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

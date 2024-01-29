@@ -3,7 +3,6 @@ package sol.ReservationSystem.userActivity;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import sol.ReservationSystem.user.User;
-import sol.ReservationSystem.user.dto.UserNewsDto;
 import sol.ReservationSystem.util.UtilMethods;
 
 import javax.servlet.http.HttpServletRequest;
