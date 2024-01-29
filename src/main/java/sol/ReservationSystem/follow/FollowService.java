@@ -4,9 +4,11 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import sol.ReservationSystem.follow.dto.FollowUserDto;
 import sol.ReservationSystem.user.User;
+import sol.ReservationSystem.userActivity.Activity;
 import sol.ReservationSystem.util.UtilMethods;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -23,6 +25,8 @@ public class FollowService {
         follow.setFollowing(following);
 
         followRepository.save(follow);
+
+        utilMethods.saveActivity(follower, Activity.FOLLOW, following.getId(), follower);
 
         return follow;
     }
