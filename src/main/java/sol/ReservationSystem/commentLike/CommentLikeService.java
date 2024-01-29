@@ -6,6 +6,7 @@ import sol.ReservationSystem.comment.Comment;
 import sol.ReservationSystem.comment.CommentRepository;
 import sol.ReservationSystem.commentLike.dto.CommentLikeDto;
 import sol.ReservationSystem.user.User;
+import sol.ReservationSystem.userActivity.Activity;
 import sol.ReservationSystem.util.UtilMethods;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +29,8 @@ public class CommentLikeService {
 
         comment.updateLikeCount();
         commentRepository.save(comment);
+
+        utilMethods.saveActivity(user, Activity.COMMENT_LIKE, commentLike.getId(), comment.getUser());
 
         return commentLike;
     }

@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import sol.ReservationSystem.post.Post;
 import sol.ReservationSystem.postLike.dto.PostLikeDto;
 import sol.ReservationSystem.user.User;
+import sol.ReservationSystem.userActivity.Activity;
 import sol.ReservationSystem.util.UtilMethods;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +25,8 @@ public class PostLikeService {
         postLikeRepository.save(postLike);
 
         post.updateLikeCount();
+
+        utilMethods.saveActivity(user, Activity.POST_LIKE, postLike.getId(), post.getUser());
 
         return postLike;
     }
