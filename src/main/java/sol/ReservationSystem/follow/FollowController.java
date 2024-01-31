@@ -21,9 +21,8 @@ public class FollowController {
     private UtilMethods utilMethods;
     @PostMapping
     public ResponseEntity followUser(@RequestBody FollowUserDto followUserDto, HttpServletRequest request) {
-        Follow follow = followService.saveFollow(followUserDto, request);
+        ResponseDto responseDto = followService.saveFollow(followUserDto, request);
 
-        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully saved", follow.getFollowing().getName());
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

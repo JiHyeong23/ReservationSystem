@@ -6,8 +6,6 @@ import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-import sol.ReservationSystem.user.User;
-import sol.ReservationSystem.user.UserRepository;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -20,7 +18,6 @@ public class JwtHelper {
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 20;
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;
     private Environment env;
-    private UserRepository userRepository;
 
     public String getEmailFromJwtToken(String token) {
         SecretKey key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(env.getProperty("jwt.key.secret")));
@@ -44,19 +41,18 @@ public class JwtHelper {
     }
 
     public ResponseToken createToken(String username) {
-        User user = userRepository.findByEmail(username);
         Map<String, String> map = new HashMap<>();
         map.put("type", "access");
-        map.put("name", user.getEmail());
+        map.put("name", username);
         SecretKey accessKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(env.getProperty("jwt.key.secret")));
 
         String accessToken = Jwts.builder()
-                .setClaims(map).setSubject(user.getEmail())
+                .setClaims(map).setSubject(username)
                 .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRE_TIME))
                 .signWith(accessKey, SignatureAlgorithm.HS512).compact();
 
         String refreshToken = Jwts.builder()
-                .setSubject(user.getEmail())
+                .setSubject(username)
                 .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRE_TIME))
                 .signWith(accessKey, SignatureAlgorithm.HS512).compact();
 

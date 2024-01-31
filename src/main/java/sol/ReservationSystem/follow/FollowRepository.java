@@ -11,4 +11,6 @@ import java.util.List;
 public interface FollowRepository extends JpaRepository<Follow, Long>{
     @Query("SELECT f.following FROM Follow f WHERE f.follower = :user")
     List<User> findAllByFollowing(User user);
+
+    Follow findByFollowerAndFollowing(User follower, User following);
 }

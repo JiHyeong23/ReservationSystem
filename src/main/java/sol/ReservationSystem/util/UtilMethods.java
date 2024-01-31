@@ -53,6 +53,12 @@ public class UtilMethods {
                 .build();
     }
 
+    public <T>ResponseDto makeFailResponseDto(String message, T response) {
+        return ResponseDto.builder()
+                .result(Result.FAIL).message(message).response(response)
+                .build();
+    }
+
     public Post findPost(Long postId) {
         return postRepository.findById(postId).get();
     }

@@ -2,6 +2,7 @@ package sol.ReservationSystem.user;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -13,6 +14,7 @@ import sol.ReservationSystem.user.dto.UserModifyDto;
 import sol.ReservationSystem.user.dto.UserPassUpdateDto;
 import sol.ReservationSystem.user.dto.UserSignUpDto;
 import sol.ReservationSystem.util.FileUploader;
+import sol.ReservationSystem.util.ResponseDto;
 import sol.ReservationSystem.util.UtilMethods;
 
 import javax.servlet.http.HttpServletRequest;
@@ -71,14 +73,17 @@ public class UserService implements UserDetailsService {
         return user;
     }
 
-    public User updatePassword(UserPassUpdateDto userPassUpdateDto, HttpServletRequest request) {
+    public ResponseDto updatePassword(UserPassUpdateDto userPassUpdateDto, HttpServletRequest request) {
         User user = utilMethods.parseTokenForUser(request);
+        ResponseDto responseDto;
         if (encoder.matches(userPassUpdateDto.getPassword(), user.getPassword())) {
             user.setNewPassword(encoder.encode(userPassUpdateDto.getNewPassword()));
             userRepository.save(user);
-        } //예외처리
-
-        return user;
+            return responseDto = utilMethods.makeSuccessResponseDto("Successfully updated", user.getName());
+        }
+        else {
+            return responseDto = utilMethods.makeFailResponseDto("비밀번호가 틀립니다", user.getName());
+        }
     }
 
     public User findByEmail(String username) {

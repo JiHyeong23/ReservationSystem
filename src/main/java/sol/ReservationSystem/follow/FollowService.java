@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import sol.ReservationSystem.follow.dto.FollowUserDto;
 import sol.ReservationSystem.user.User;
 import sol.ReservationSystem.userActivity.Activity;
+import sol.ReservationSystem.util.ResponseDto;
 import sol.ReservationSystem.util.UtilMethods;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,10 +17,14 @@ public class FollowService {
     private UtilMethods utilMethods;
     private FollowRepository followRepository;
 
-    public Follow saveFollow(FollowUserDto followUserDto, HttpServletRequest request) {
+    public ResponseDto saveFollow(FollowUserDto followUserDto, HttpServletRequest request) {
         User follower = utilMethods.parseTokenForUser(request);
         User following = utilMethods.findUser(followUserDto.getEmail());
 
+        Follow result = followRepository.findByFollowerAndFollowing(follower, following);
+        if (result != null) {
+            return utilMethods.makeFailResponseDto("이미 팔로우하고 있는 유저입니다", following.getName());
+        }
         Follow follow = new Follow();
         follow.setFollower(follower);
         follow.setFollowing(following);
@@ -28,6 +33,8 @@ public class FollowService {
 
         utilMethods.saveActivity(follower, Activity.FOLLOW, following.getId(), follower);
 
-        return follow;
+        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully saved", follow.getFollowing().getName());
+
+        return responseDto;
     }
 }

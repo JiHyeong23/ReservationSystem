@@ -1,6 +1,7 @@
 package sol.ReservationSystem.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -10,6 +11,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import sol.ReservationSystem.user.UserRepository;
 import sol.ReservationSystem.user.UserService;
 import sol.ReservationSystem.user.dto.UserLoginDto;
+import sol.ReservationSystem.util.Result;
+import sol.ReservationSystem.validation.ApiException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -63,5 +66,15 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader("Access-Control-Allow-Origin", "*"); //크로스오리진
         response.setHeader("Authorization", "Bearer " + token.getAccessToken());
         response.getWriter().write(new ObjectMapper().writeValueAsString(token));
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        //super.unsuccessfulAuthentication(request, response, failed);
+        ApiException apiException = new ApiException(Result.FAIL, failed.getMessage().substring(15), HttpStatus.NOT_FOUND);
+        response.setContentType("application/json");
+        response.setCharacterEncoding("utf-8");
+        response.setHeader("Access-Control-Allow-Origin", "*"); //크로스오리진
+        response.getWriter().write(new ObjectMapper().writeValueAsString(apiException));
     }
 }
