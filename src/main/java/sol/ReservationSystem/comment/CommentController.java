@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sol.ReservationSystem.comment.dto.CommentCreationDto;
+import sol.ReservationSystem.user.User;
 import sol.ReservationSystem.util.ResponseDto;
 import sol.ReservationSystem.util.UtilMethods;
 
@@ -21,9 +22,8 @@ public class CommentController {
     private CommentService commentService;
     @PostMapping
     public ResponseEntity createComment(@RequestBody CommentCreationDto commentCreationDto, HttpServletRequest request) {
-        Comment comment = commentService.saveComment(commentCreationDto, request);
-
-        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully saved", comment.getBody());
+        User user = utilMethods.parseTokenForUser(request);
+        ResponseDto responseDto = commentService.saveComment(commentCreationDto, user);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

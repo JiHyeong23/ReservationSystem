@@ -17,8 +17,7 @@ public class FollowService {
     private UtilMethods utilMethods;
     private FollowRepository followRepository;
 
-    public ResponseDto saveFollow(FollowUserDto followUserDto, HttpServletRequest request) {
-        User follower = utilMethods.parseTokenForUser(request);
+    public ResponseDto saveFollow(FollowUserDto followUserDto, User follower) {
         User following = utilMethods.findUser(followUserDto.getEmail());
 
         Follow result = followRepository.findByFollowerAndFollowing(follower, following);
@@ -33,8 +32,6 @@ public class FollowService {
 
         utilMethods.saveActivity(follower, Activity.FOLLOW, following.getId(), follower);
 
-        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully saved", follow.getFollowing().getName());
-
-        return responseDto;
+        return utilMethods.makeSuccessResponseDto("Successfully saved", follow.getFollowing().getName());
     }
 }

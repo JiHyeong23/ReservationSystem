@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sol.ReservationSystem.post.dto.PostCreationDto;
+import sol.ReservationSystem.user.User;
 import sol.ReservationSystem.util.ResponseDto;
 import sol.ReservationSystem.util.UtilMethods;
 
@@ -21,9 +22,8 @@ public class PostController {
     private PostService postService;
     @PostMapping
     public ResponseEntity createPost(@RequestBody PostCreationDto postCreationDto, HttpServletRequest request) {
-        Post post = postService.savePost(postCreationDto, request);
-
-        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully saved", post.getTitle());
+        User user = utilMethods.parseTokenForUser(request);
+        ResponseDto responseDto = postService.savePost(postCreationDto, user);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

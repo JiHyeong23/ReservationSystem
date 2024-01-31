@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sol.ReservationSystem.commentLike.dto.CommentLikeDto;
+import sol.ReservationSystem.user.User;
 import sol.ReservationSystem.util.ResponseDto;
 import sol.ReservationSystem.util.UtilMethods;
 
@@ -21,9 +22,8 @@ public class CommentLikeController {
     private CommentLikeService commentLikeService;
     @PostMapping
     public ResponseEntity commentLike(@RequestBody CommentLikeDto commentLikeDto, HttpServletRequest request) {
-        CommentLike commentLike = commentLikeService.saveCommentLike(commentLikeDto, request);
-
-        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully saved", commentLike.getId());
+        User user = utilMethods.parseTokenForUser(request);
+        ResponseDto responseDto = commentLikeService.saveCommentLike(commentLikeDto, user);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

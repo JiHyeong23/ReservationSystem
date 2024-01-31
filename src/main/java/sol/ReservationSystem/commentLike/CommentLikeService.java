@@ -7,6 +7,7 @@ import sol.ReservationSystem.comment.CommentRepository;
 import sol.ReservationSystem.commentLike.dto.CommentLikeDto;
 import sol.ReservationSystem.user.User;
 import sol.ReservationSystem.userActivity.Activity;
+import sol.ReservationSystem.util.ResponseDto;
 import sol.ReservationSystem.util.UtilMethods;
 
 import javax.servlet.http.HttpServletRequest;
@@ -18,8 +19,7 @@ public class CommentLikeService {
     private CommentLikeRepository commentLikeRepository;
     private final CommentRepository commentRepository;
 
-    public CommentLike saveCommentLike(CommentLikeDto commentLikeDto, HttpServletRequest request) {
-        User user = utilMethods.parseTokenForUser(request);
+    public ResponseDto saveCommentLike(CommentLikeDto commentLikeDto, User user) {
         Comment comment = utilMethods.findComment(commentLikeDto.getCommentId());
 
         CommentLike commentLike = new CommentLike();
@@ -32,6 +32,6 @@ public class CommentLikeService {
 
         utilMethods.saveActivity(user, Activity.COMMENT_LIKE, commentLike.getId(), comment.getUser());
 
-        return commentLike;
+        return utilMethods.makeSuccessResponseDto("Successfully saved", commentLike.getId());
     }
 }

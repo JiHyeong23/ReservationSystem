@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sol.ReservationSystem.user.User;
 import sol.ReservationSystem.util.ResponseDto;
 import sol.ReservationSystem.util.UtilMethods;
 
@@ -21,9 +22,8 @@ public class UserActivityController {
 
     @GetMapping
     public ResponseEntity getNews(HttpServletRequest request) {
-        List<UserNewsDto> news = userActivityService.getNews(request);
-
-        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully loads", news);
+        User user = utilMethods.parseTokenForUser(request);
+        ResponseDto responseDto = userActivityService.getNews(user);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

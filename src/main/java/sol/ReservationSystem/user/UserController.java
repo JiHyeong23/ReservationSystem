@@ -15,7 +15,6 @@ import sol.ReservationSystem.util.UtilMethods;
 import sol.ReservationSystem.validation.ValidationSequence;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 @RestController
 @RequestMapping("/users")
@@ -27,35 +26,31 @@ public class UserController {
     //회원가입
     @PostMapping("/signUp")
     public ResponseEntity registerUser(@Validated(ValidationSequence.class) @RequestBody UserSignUpDto userSignUpDto){
-        User user = userService.saveUser(userSignUpDto);
-
-        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully saved", user.getName());
+        ResponseDto responseDto = userService.saveUser(userSignUpDto);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     //이름, 설명 업데이트
     @PostMapping("/update")
     public ResponseEntity modifyUseInfo(@RequestBody UserModifyDto userModifyDto, HttpServletRequest request) {
-        User user = userService.updateUserInfo(userModifyDto, request);
-
-        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully updated", user.getUpdatedAt());
+        User user = utilMethods.parseTokenForUser(request);
+        ResponseDto responseDto = userService.updateUserInfo(userModifyDto, user);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     //이미지 업데이트
     @PostMapping(value = "/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity imageUpdate(@RequestPart MultipartFile profileImage, HttpServletRequest request) {
-        User user = userService.updateProfileImage(profileImage, request);
-
-        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully updated", user.getUpdatedAt());
+        User user = utilMethods.parseTokenForUser(request);
+        ResponseDto responseDto = userService.updateProfileImage(profileImage, user);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     //비밀번호 업데이트
     @PostMapping("/password")
     public ResponseEntity pwUpdate(@RequestBody UserPassUpdateDto userPassUpdateDto, HttpServletRequest request) {
-        ResponseDto responseDto = userService.updatePassword(userPassUpdateDto, request);
-
+        User user = utilMethods.parseTokenForUser(request);
+        ResponseDto responseDto = userService.updatePassword(userPassUpdateDto, user);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 

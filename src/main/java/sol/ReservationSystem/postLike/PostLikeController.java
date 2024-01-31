@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sol.ReservationSystem.postLike.dto.PostLikeDto;
+import sol.ReservationSystem.user.User;
 import sol.ReservationSystem.util.ResponseDto;
 import sol.ReservationSystem.util.UtilMethods;
 
@@ -22,9 +23,8 @@ public class PostLikeController {
 
     @PostMapping
     public ResponseEntity likePost(@RequestBody PostLikeDto postLikeDto, HttpServletRequest request) {
-        PostLike postLike = postLikeService.savePostLike(postLikeDto, request);
-
-        ResponseDto responseDto = utilMethods.makeSuccessResponseDto("Successfully saved", postLike.getId());
+        User user = utilMethods.parseTokenForUser(request);
+        ResponseDto responseDto = postLikeService.savePostLike(postLikeDto, user);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 }

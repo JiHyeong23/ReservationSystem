@@ -41,17 +41,16 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    public User saveUser(UserSignUpDto userSignUpDto) {
+    public ResponseDto saveUser(UserSignUpDto userSignUpDto) {
         userSignUpDto.setPassword(encoder.encode(userSignUpDto.getPassword()));
         User user = userMapper.UserSignUpDtoToUser(userSignUpDto);
         user.setCreatedAt(LocalDateTime.now());
         userRepository.save(user);
 
-        return user;
+        return utilMethods.makeSuccessResponseDto("Successfully saved", user.getName());
     }
 
-    public User updateUserInfo(UserModifyDto userModifyDto, HttpServletRequest request) {
-        User user = utilMethods.parseTokenForUser(request);
+    public ResponseDto updateUserInfo(UserModifyDto userModifyDto, User user) {
         if (user.getDescription() == null) {
             user.setDescription("");
         }
@@ -59,22 +58,20 @@ public class UserService implements UserDetailsService {
         user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
 
-        return user;
+        return utilMethods.makeSuccessResponseDto("Successfully updated", user.getUpdatedAt());
     }
 
-    public User updateProfileImage(MultipartFile profileImage, HttpServletRequest request) {
-        User user = utilMethods.parseTokenForUser(request);
+    public ResponseDto updateProfileImage(MultipartFile profileImage, User user) {
         String beforeImage = user.getProfileImage();
         String imagePath = fileUploader.saveImage(profileImage, beforeImage);
         user.setProfileImage(imagePath);
         user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);
 
-        return user;
+        return utilMethods.makeSuccessResponseDto("Successfully updated", user.getUpdatedAt());
     }
 
-    public ResponseDto updatePassword(UserPassUpdateDto userPassUpdateDto, HttpServletRequest request) {
-        User user = utilMethods.parseTokenForUser(request);
+    public ResponseDto updatePassword(UserPassUpdateDto userPassUpdateDto, User user) {
         ResponseDto responseDto;
         if (encoder.matches(userPassUpdateDto.getPassword(), user.getPassword())) {
             user.setNewPassword(encoder.encode(userPassUpdateDto.getNewPassword()));
