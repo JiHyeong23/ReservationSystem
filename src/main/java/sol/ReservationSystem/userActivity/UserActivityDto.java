@@ -1,4 +1,4 @@
-package sol.ReservationSystem.user;
+package sol.ReservationSystem.userActivity;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
